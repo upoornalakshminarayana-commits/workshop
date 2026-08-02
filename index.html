@@ -1612,11 +1612,12 @@
     introVideo.addEventListener('ended', endVideoPreloader);
     introVideo.addEventListener('error', endVideoPreloader);
 
-    introVideo.play().catch(function() {
-      // If autoplay is blocked by browser
-    });
-
-    setTimeout(endVideoPreloader, 8000);
+    var playPromise = introVideo.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(function() {
+        // If browser blocks autoplay, user can tap Skip or interact
+      });
+    }
   } else {
     endVideoPreloader();
   }
