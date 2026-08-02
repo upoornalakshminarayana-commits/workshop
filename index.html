@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta id="viewportMeta" name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2Days Workshop — Special Edition</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -858,6 +858,53 @@
     *{animation:none !important; transition:none !important;}
   }
 
+  /* ===== FIRST VIDEO PRELOADER OVERLAY ===== */
+  #videoPreloaderOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    background: #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+  }
+  #videoPreloaderOverlay.video-done {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  #introVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  #skipVideoBtn {
+    position: absolute;
+    bottom: 36px;
+    right: 36px;
+    z-index: 100001;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 9px 20px;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  #skipVideoBtn:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: translateY(-2px);
+  }
+
   /* ===== FULLSCREEN SPINNING NEWSPAPER PRELOADER ===== */
   #preloaderOverlay {
     position: fixed;
@@ -961,84 +1008,6 @@
     width: 100%;
   }
 
-  /* ===== MOBILE DESKTOP SITE PROMPT MODAL ===== */
-  .desktop-prompt-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 100000;
-    background: rgba(12, 10, 8, 0.88);
-    backdrop-filter: blur(8px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  .desktop-prompt-overlay.active {
-    display: flex;
-  }
-  .desktop-prompt-card {
-    background: var(--paper);
-    border: 3px double var(--ink);
-    padding: 30px 24px;
-    max-width: 440px;
-    width: 100%;
-    text-align: center;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-    animation: dpPop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  @keyframes dpPop {
-    0% { transform: scale(0.85); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-  }
-  .dp-badge {
-    font-family: 'Courier Prime', monospace;
-    font-size: 11.5px;
-    font-weight: 700;
-    color: var(--crimson);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 10px;
-  }
-  .desktop-prompt-card h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px;
-    margin: 0 0 10px;
-    text-transform: uppercase;
-    color: var(--ink);
-  }
-  .desktop-prompt-card p {
-    font-family: 'Inter', sans-serif;
-    font-size: 13.5px;
-    line-height: 1.55;
-    color: var(--ink-soft);
-    margin-bottom: 20px;
-  }
-  .dp-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .dp-btn {
-    font-family: 'Courier Prime', monospace;
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 12px 16px;
-    border: 1.5px solid var(--ink);
-    background: transparent;
-    cursor: pointer;
-    font-weight: 700;
-    transition: transform 0.15s ease, background 0.2s ease;
-  }
-  .dp-btn.primary {
-    background: var(--crimson);
-    color: var(--paper);
-    border-color: var(--crimson);
-  }
-  .dp-btn:hover {
-    transform: scale(1.02);
-  }
-
   /* ===== FIXED STICKY TICKER MARQUEE BARS ===== */
   .ticker-bar {
     width: 100%;
@@ -1093,17 +1062,12 @@
 </head>
 <body>
 
-<!-- MOBILE DESKTOP SITE PROMPT OVERLAY -->
-<div id="desktopPromptOverlay" class="desktop-prompt-overlay">
-  <div class="desktop-prompt-card">
-    <div class="dp-badge">📱 Mobile Device Detected</div>
-    <h3>Desktop View Recommended</h3>
-    <p>This technical newspaper edition features broadsheet multi-column layouts &amp; 3D animations. Enable <strong>Desktop Site View</strong> for the optimal experience.</p>
-    <div class="dp-actions">
-      <button id="enableDesktopViewBtn" class="dp-btn primary">🖥️ Switch to Desktop View</button>
-      <button id="dismissDesktopPromptBtn" class="dp-btn">Continue on Mobile View</button>
-    </div>
-  </div>
+<!-- FIRST VIDEO PRELOADER OVERLAY -->
+<div id="videoPreloaderOverlay">
+  <video id="introVideo" autoplay muted playsinline preload="auto">
+    <source src="intro-preloader.mp4" type="video/mp4">
+  </video>
+  <button id="skipVideoBtn">Skip Intro ➔</button>
 </div>
 
 <!-- SPINNING NEWSPAPER PRELOADER OVERLAY -->
@@ -1587,46 +1551,79 @@
 </div>
 
 <script>
-// Newspaper Spinning Preloader Sequence
+// Dual-Stage Preloader Sequence (Video -> Spinning Newspaper -> Main Site)
 (function() {
-  const overlay = document.getElementById('preloaderOverlay');
+  const videoOverlay = document.getElementById('videoPreloaderOverlay');
+  const introVideo = document.getElementById('introVideo');
+  const skipBtn = document.getElementById('skipVideoBtn');
+
+  const paperOverlay = document.getElementById('preloaderOverlay');
   const posicionador = document.getElementById('posicionador');
   const periodico = document.getElementById('periodico');
-  if (!overlay || !posicionador || !periodico) return;
 
-  var a = 7;
-  for (var i = 1; i <= 6; i++) {
-    a--;
-    var stackDiv = document.createElement('div');
-    stackDiv.className = 'periodico-stack';
-    stackDiv.style.left = (i * 6) + 'px';
-    stackDiv.style.top = (i * 6) + 'px';
-    stackDiv.style.zIndex = a;
-    stackDiv.innerHTML = `
-      <div class="preloader-head">KALASALINGAM ACADEMY &amp; KARE IEEE</div>
-      <h2 style="font-family:'Playfair Display',serif; font-size:clamp(26px, 4vw, 48px); margin:12px 0; text-transform:uppercase; color:var(--crimson); font-weight:900;">2DAYS WORKSHOP</h2>
-      <p class="preloader-p">Over two intensive days, participants build a complete remote sensing forecasting pipeline using CNNs, LSTMs &amp; Transformers.</p>
-      <p class="preloader-p">Organized by Department of Computer Science &amp; KARE IEEE Education Society. October 14–15, 2026.</p>
-      <span class="preloader-tag">VOL. XXIV NO. 02 · SPECIAL WORKSHOP EDITION</span>
-    `;
-    posicionador.appendChild(stackDiv);
+  let videoCompleted = false;
+
+  function endVideoPreloader() {
+    if (videoCompleted) return;
+    videoCompleted = true;
+
+    if (videoOverlay) {
+      videoOverlay.classList.add('video-done');
+    }
+
+    // Start Stage 2: Newspaper Preloader Stack
+    if (posicionador && periodico) {
+      var a = 7;
+      for (var i = 1; i <= 6; i++) {
+        a--;
+        var stackDiv = document.createElement('div');
+        stackDiv.className = 'periodico-stack';
+        stackDiv.style.left = (i * 6) + 'px';
+        stackDiv.style.top = (i * 6) + 'px';
+        stackDiv.style.zIndex = a;
+        stackDiv.innerHTML = `
+          <div class="preloader-head">KALASALINGAM ACADEMY &amp; KARE IEEE</div>
+          <h2 style="font-family:'Playfair Display',serif; font-size:clamp(26px, 4vw, 48px); margin:12px 0; text-transform:uppercase; color:var(--crimson); font-weight:900;">2DAYS WORKSHOP</h2>
+          <p class="preloader-p">Over two intensive days, participants build a complete remote sensing forecasting pipeline using CNNs, LSTMs &amp; Transformers.</p>
+          <p class="preloader-p">Organized by Department of Computer Science &amp; KARE IEEE Education Society. October 14–15, 2026.</p>
+          <span class="preloader-tag">VOL. XXIV NO. 02 · SPECIAL WORKSHOP EDITION</span>
+        `;
+        posicionador.appendChild(stackDiv);
+      }
+
+      setTimeout(function() {
+        posicionador.classList.add('aparece');
+      }, 100);
+
+      setTimeout(function() {
+        periodico.classList.add('muevesolapa');
+      }, 1800);
+
+      setTimeout(function() {
+        if (paperOverlay) paperOverlay.classList.add('loaded');
+        startSiteAnimations();
+      }, 2800);
+    } else {
+      startSiteAnimations();
+    }
   }
 
-  // Step 1: Spin in newspaper stack
-  setTimeout(function() {
-    posicionador.classList.add('aparece');
-  }, 100);
+  if (introVideo) {
+    introVideo.addEventListener('ended', endVideoPreloader);
+    introVideo.addEventListener('error', endVideoPreloader);
 
-  // Step 2: Flip top newspaper page
-  setTimeout(function() {
-    periodico.classList.add('muevesolapa');
-  }, 1800);
+    introVideo.play().catch(function() {
+      // If autoplay is blocked by browser
+    });
 
-  // Step 3: Fade out preloader overlay to reveal main website & start site animations
-  setTimeout(function() {
-    overlay.classList.add('loaded');
-    startSiteAnimations();
-  }, 2800);
+    setTimeout(endVideoPreloader, 8000);
+  } else {
+    endVideoPreloader();
+  }
+
+  if (skipBtn) {
+    skipBtn.addEventListener('click', endVideoPreloader);
+  }
 })();
 
 gsap.registerPlugin(ScrollTrigger);
@@ -1924,47 +1921,6 @@ gsap.utils.toArray('.hxg-panel').forEach((card,i)=>{
   fxgRow.addEventListener('mouseleave', () => {
     if (!isCompact) setActive(null);
   });
-})();
-
-// Mobile Desktop Site Detection & Viewport Switcher
-(function() {
-  const overlay = document.getElementById('desktopPromptOverlay');
-  const enableBtn = document.getElementById('enableDesktopViewBtn');
-  const dismissBtn = document.getElementById('dismissDesktopPromptBtn');
-  const vpMeta = document.getElementById('viewportMeta');
-
-  function isMobileDevice() {
-    return window.innerWidth <= 860 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  }
-
-  const savedPref = sessionStorage.getItem('preferredView');
-  if (savedPref === 'desktop' && vpMeta) {
-    vpMeta.setAttribute('content', 'width=1280, initial-scale=0.35');
-  }
-
-  if (isMobileDevice() && !savedPref && overlay) {
-    setTimeout(() => {
-      overlay.classList.add('active');
-    }, 600);
-  }
-
-  if (enableBtn) {
-    enableBtn.addEventListener('click', function() {
-      sessionStorage.setItem('preferredView', 'desktop');
-      if (vpMeta) {
-        vpMeta.setAttribute('content', 'width=1280, initial-scale=0.35');
-      }
-      overlay.classList.remove('active');
-      window.scrollTo(0, 0);
-    });
-  }
-
-  if (dismissBtn) {
-    dismissBtn.addEventListener('click', function() {
-      sessionStorage.setItem('preferredView', 'mobile');
-      overlay.classList.remove('active');
-    });
-  }
 })();
 
 // Payment Proof Image Preview Logic
