@@ -913,109 +913,6 @@
     transform: translateY(-2px);
   }
 
-  /* ===== FULLSCREEN SPINNING NEWSPAPER PRELOADER ===== */
-  #preloaderOverlay {
-    position: fixed;
-    inset: 0;
-    z-index: 99999;
-    background: radial-gradient(ellipse at center, #1c1a17 0%, #0b0908 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    transition: opacity 0.8s ease, visibility 0.8s ease;
-  }
-  #preloaderOverlay.loaded {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  #posicionador {
-    width: min(94vw, 920px);
-    height: min(88vh, 620px);
-    position: relative;
-    margin: 0 auto;
-    transition: transform 1.6s cubic-bezier(0.16, 1, 0.3, 1);
-    transform: scale(0) rotate(0deg);
-  }
-  #posicionador.aparece {
-    transform: scale(1) rotate(720deg) !important;
-  }
-
-  #periodico, .periodico-stack {
-    padding: 40px 48px;
-    background-color: var(--paper);
-    border: 3px solid var(--ink);
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
-    box-sizing: border-box;
-    backface-visibility: hidden;
-    transition: transform 1.2s ease, left 1.2s ease, opacity 0.6s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-
-  #periodico {
-    z-index: 90;
-    text-align: center;
-  }
-  #periodico.muevesolapa {
-    transform: rotateY(-180deg);
-    left: -1000px;
-    opacity: 0;
-  }
-
-  .preloader-head {
-    font-family: 'Courier Prime', monospace;
-    font-size: 13px;
-    letter-spacing: 0.16em;
-    color: var(--crimson);
-    text-transform: uppercase;
-    border-top: 2px solid var(--ink);
-    border-bottom: 2px solid var(--ink);
-    padding: 8px 16px;
-    margin-bottom: 20px;
-    font-weight: 700;
-    width: 100%;
-  }
-  .preloader-h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(48px, 9vw, 96px);
-    margin: 0;
-    font-weight: 900;
-    line-height: 0.95;
-    color: var(--crimson);
-    text-transform: uppercase;
-    letter-spacing: -0.02em;
-  }
-  .preloader-p {
-    font-family: 'Inter', sans-serif;
-    font-size: 15px;
-    line-height: 1.65;
-    color: var(--ink-soft);
-    text-align: left;
-    margin-top: 14px;
-  }
-  .preloader-tag {
-    font-family: 'Courier Prime', monospace;
-    font-size: 12px;
-    color: var(--sepia);
-    margin-top: 24px;
-    display: block;
-    text-align: center;
-    border-top: 1px dashed var(--rule);
-    padding-top: 10px;
-    width: 100%;
-  }
-
   /* ===== FIXED STICKY TICKER MARQUEE BARS ===== */
   .ticker-bar {
     width: 100%;
@@ -1077,17 +974,6 @@
   </video>
   <button id="toggleSoundBtn">🔇 Sound Off</button>
   <button id="skipVideoBtn">Skip Intro ➔</button>
-</div>
-
-<!-- SPINNING NEWSPAPER PRELOADER OVERLAY -->
-<div id="preloaderOverlay">
-  <div id="posicionador">
-    <div id="periodico">
-      <div class="preloader-head">KALASALINGAM ACADEMY &amp; KARE IEEE</div>
-      <h1 class="preloader-h1">2DAYS WORKSHOP</h1>
-      <span class="preloader-tag">SPECIAL WORKSHOP EDITION · OCTOBER 14–15, 2026</span>
-    </div>
-  </div>
 </div>
 
 <!-- TOP FIXED TICKER MARQUEE BAR -->
@@ -1560,15 +1446,12 @@
 </div>
 
 <script>
-// Dual-Stage Preloader Sequence (Video -> Spinning Newspaper -> Main Site)
+// Video Intro Preloader Sequence -> Direct Main Site Unveil
 (function() {
   const videoOverlay = document.getElementById('videoPreloaderOverlay');
   const introVideo = document.getElementById('introVideo');
   const skipBtn = document.getElementById('skipVideoBtn');
-
-  const paperOverlay = document.getElementById('preloaderOverlay');
-  const posicionador = document.getElementById('posicionador');
-  const periodico = document.getElementById('periodico');
+  const soundBtn = document.getElementById('toggleSoundBtn');
 
   let videoCompleted = false;
 
@@ -1580,41 +1463,7 @@
       videoOverlay.classList.add('video-done');
     }
 
-    // Start Stage 2: Newspaper Preloader Stack
-    if (posicionador && periodico) {
-      var a = 7;
-      for (var i = 1; i <= 6; i++) {
-        a--;
-        var stackDiv = document.createElement('div');
-        stackDiv.className = 'periodico-stack';
-        stackDiv.style.left = (i * 6) + 'px';
-        stackDiv.style.top = (i * 6) + 'px';
-        stackDiv.style.zIndex = a;
-        stackDiv.innerHTML = `
-          <div class="preloader-head">KALASALINGAM ACADEMY &amp; KARE IEEE</div>
-          <h2 style="font-family:'Playfair Display',serif; font-size:clamp(26px, 4vw, 48px); margin:12px 0; text-transform:uppercase; color:var(--crimson); font-weight:900;">2DAYS WORKSHOP</h2>
-          <p class="preloader-p">Over two intensive days, participants build a complete remote sensing forecasting pipeline using CNNs, LSTMs &amp; Transformers.</p>
-          <p class="preloader-p">Organized by Department of Computer Science &amp; KARE IEEE Education Society. October 14–15, 2026.</p>
-          <span class="preloader-tag">VOL. XXIV NO. 02 · SPECIAL WORKSHOP EDITION</span>
-        `;
-        posicionador.appendChild(stackDiv);
-      }
-
-      setTimeout(function() {
-        posicionador.classList.add('aparece');
-      }, 100);
-
-      setTimeout(function() {
-        periodico.classList.add('muevesolapa');
-      }, 1800);
-
-      setTimeout(function() {
-        if (paperOverlay) paperOverlay.classList.add('loaded');
-        startSiteAnimations();
-      }, 2800);
-    } else {
-      startSiteAnimations();
-    }
+    startSiteAnimations();
   }
 
   if (introVideo) {
@@ -1631,7 +1480,6 @@
     endVideoPreloader();
   }
 
-  const soundBtn = document.getElementById('toggleSoundBtn');
   if (soundBtn && introVideo) {
     soundBtn.addEventListener('click', function() {
       if (introVideo.muted) {
