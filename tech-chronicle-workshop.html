@@ -880,10 +880,9 @@
     height: 100%;
     object-fit: cover;
   }
-  #skipVideoBtn {
+  #toggleSoundBtn, #skipVideoBtn {
     position: absolute;
     bottom: 36px;
-    right: 36px;
     z-index: 100001;
     background: rgba(255, 255, 255, 0.18);
     backdrop-filter: blur(10px);
@@ -899,8 +898,17 @@
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
-  #skipVideoBtn:hover {
+  #toggleSoundBtn {
+    left: 36px;
+  }
+  #skipVideoBtn {
+    right: 36px;
+  }
+  #toggleSoundBtn:hover, #skipVideoBtn:hover {
     background: rgba(255, 255, 255, 0.35);
     transform: translateY(-2px);
   }
@@ -1067,6 +1075,7 @@
   <video id="introVideo" autoplay muted playsinline preload="auto">
     <source src="intro-preloader.mp4" type="video/mp4">
   </video>
+  <button id="toggleSoundBtn">🔇 Sound Off</button>
   <button id="skipVideoBtn">Skip Intro ➔</button>
 </div>
 
@@ -1620,6 +1629,20 @@
     }
   } else {
     endVideoPreloader();
+  }
+
+  const soundBtn = document.getElementById('toggleSoundBtn');
+  if (soundBtn && introVideo) {
+    soundBtn.addEventListener('click', function() {
+      if (introVideo.muted) {
+        introVideo.muted = false;
+        introVideo.volume = 1.0;
+        soundBtn.innerHTML = '🔊 Sound On';
+      } else {
+        introVideo.muted = true;
+        soundBtn.innerHTML = '🔇 Sound Off';
+      }
+    });
   }
 
   if (skipBtn) {
