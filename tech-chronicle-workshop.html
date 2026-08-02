@@ -913,6 +913,81 @@
     transform: translateY(-2px);
   }
 
+  /* ===== INITIAL DESKTOP VIEW PROMPT OVERLAY ===== */
+  #desktopViewPrompt {
+    position: fixed;
+    inset: 0;
+    z-index: 200000;
+    background: radial-gradient(ellipse at center, #1f1b16 0%, #0b0908 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    text-align: center;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+  #desktopViewPrompt.dismissed {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .desktop-prompt-card {
+    background: var(--paper);
+    border: 3px double var(--ink);
+    padding: 40px 32px;
+    max-width: 480px;
+    width: 90%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    position: relative;
+    box-sizing: border-box;
+  }
+  .desktop-prompt-kicker {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.15em;
+    color: var(--crimson);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+  .desktop-prompt-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 4vw, 36px);
+    margin: 0 0 14px;
+    color: var(--ink);
+    font-weight: 900;
+    line-height: 1.1;
+  }
+  .desktop-prompt-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-bottom: 24px;
+  }
+  .desktop-view-btn {
+    background: var(--crimson);
+    color: var(--paper);
+    border: none;
+    padding: 14px 28px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(126, 14, 30, 0.4);
+    transition: transform 0.2s ease, background 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .desktop-view-btn:hover {
+    background: var(--ink);
+    transform: scale(1.03);
+  }
+
   /* ===== FIXED STICKY TICKER MARQUEE BARS ===== */
   .ticker-bar {
     width: 100%;
@@ -966,6 +1041,16 @@
 </style>
 </head>
 <body>
+
+<!-- INITIAL DESKTOP VIEW PROMPT OVERLAY -->
+<div id="desktopViewPrompt">
+  <div class="desktop-prompt-card">
+    <div class="desktop-prompt-kicker">KARE IEEE 2DAYS WORKSHOP</div>
+    <h2 class="desktop-prompt-title">Optimal Viewing Experience</h2>
+    <p class="desktop-prompt-desc">For the best interactive experience with full editorial layouts, 3D animations, and live video previews, view on Desktop View.</p>
+    <button class="desktop-view-btn" id="continueDesktopBtn">🖥️ Continue to Desktop View ➔</button>
+  </div>
+</div>
 
 <!-- FIRST VIDEO PRELOADER OVERLAY -->
 <div id="videoPreloaderOverlay">
@@ -1446,8 +1531,10 @@
 </div>
 
 <script>
-// Video Intro Preloader Sequence -> Direct Main Site Unveil
+// Desktop View Prompt -> Start Video Preloader Sequence
 (function() {
+  const promptOverlay = document.getElementById('desktopViewPrompt');
+  const continueBtn = document.getElementById('continueDesktopBtn');
   const videoOverlay = document.getElementById('videoPreloaderOverlay');
   const introVideo = document.getElementById('introVideo');
   const skipBtn = document.getElementById('skipVideoBtn');
@@ -1466,18 +1553,32 @@
     startSiteAnimations();
   }
 
-  if (introVideo) {
-    introVideo.addEventListener('ended', endVideoPreloader);
-    introVideo.addEventListener('error', endVideoPreloader);
-
-    var playPromise = introVideo.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(function() {
-        // If browser blocks autoplay, user can tap Skip or interact
-      });
+  function startPreloaderFlow() {
+    if (promptOverlay) {
+      promptOverlay.classList.add('dismissed');
     }
-  } else {
-    endVideoPreloader();
+
+    // Force desktop layout scaling on mobile screens
+    const viewportMeta = document.querySelector('meta[name="viewport"]');
+    if (viewportMeta && window.innerWidth < 1024) {
+      viewportMeta.setAttribute('content', 'width=1280, initial-scale=' + (window.innerWidth / 1280).toFixed(2) + ', user-scalable=yes');
+    }
+
+    if (introVideo) {
+      introVideo.addEventListener('ended', endVideoPreloader);
+      introVideo.addEventListener('error', endVideoPreloader);
+
+      var playPromise = introVideo.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(function() {});
+      }
+    } else {
+      endVideoPreloader();
+    }
+  }
+
+  if (continueBtn) {
+    continueBtn.addEventListener('click', startPreloaderFlow);
   }
 
   if (soundBtn && introVideo) {
