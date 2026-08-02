@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta id="viewportMeta" name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2Days Workshop — Special Edition</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -840,96 +840,19 @@
     transition: opacity 0.3s cubic-bezier(.16, 1, .3, 1), filter 0.3s cubic-bezier(.16, 1, .3, 1);
   }
 
-  /* ===== MOBILE & TABLET RESPONSIVE LAYOUT & ANIMATIONS ===== */
-  @media (max-width: 960px) {
-    body {
-      padding-top: 30px;
-      padding-bottom: 30px;
-    }
-    .wrap {
-      padding: 0 16px;
-    }
-    .dateline-bar .wrap {
-      flex-direction: column;
-      text-align: center;
-      gap: 3px;
-    }
-    .header-stamps-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      margin-bottom: 14px;
-    }
-    .stamp, .left-stamp {
-      position: relative !important;
-      top: auto !important;
-      left: auto !important;
-      right: auto !important;
-      width: 105px !important;
-      margin: 0 !important;
-      transform: scale(1) !important;
-    }
-    .masthead .eyebrow {
-      font-size: 10.5px;
-      letter-spacing: 0.12em;
-      margin-bottom: 10px;
-      max-width: 100%;
-    }
-    .masthead h1 {
-      font-size: clamp(32px, 8.5vw, 56px);
-      max-width: 100%;
-      line-height: 0.98;
-    }
-    .masthead .sub {
-      font-size: clamp(14px, 4vw, 17px);
-      line-height: 1.45;
-      margin-top: 14px;
-      padding: 0;
-    }
-    .masthead-meta {
-      flex-direction: column;
-      gap: 6px;
-      font-size: 10px;
-      margin-top: 16px;
-    }
-
-    #posicionador {
-      width: 92vw;
-      height: min(80vh, 520px);
-    }
-    #periodico, .periodico-stack {
-      padding: 24px 20px;
-    }
-    .preloader-h1 {
-      font-size: clamp(32px, 7.5vw, 52px);
-    }
-
-    .feature-grid { grid-template-columns: 1fr; gap: 24px; }
-    .feature-col { grid-template-columns: 1fr; gap: 16px; }
-    .feature-col::after { display: none; }
-    .curriculum { grid-template-columns: 1fr; }
-    .day-card:first-child { border-right: none; border-bottom: 1px solid var(--ink); }
-    .notice-grid { grid-template-columns: 1fr; gap: 16px; }
-    .footer-grid { grid-template-columns: 1fr; gap: 24px; }
-    .field-row { grid-template-columns: 1fr; gap: 14px; }
-
-    .hanging-wall-frame {
-      padding: 10px 10px 36px;
-      margin-top: 20px;
-    }
-
-    .modal-paper {
-      width: 95vw;
-      padding: 24px 18px;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-    .qr-container {
-      width: 135px;
-      height: 135px;
-      padding: 6px;
-    }
+  @media (max-width:960px){
+    .feature-grid{grid-template-columns:1fr;}
+    .feature-col{grid-template-columns:1fr; gap:16px;}
+    .feature-col::after{display:none;}
+    .curriculum{grid-template-columns:1fr;}
+    .day-card:first-child{border-right:none; border-bottom:1px solid var(--ink);}
+    /* faculty grid superseded by .hxg-row.is-compact */
+    .notice-grid{grid-template-columns:1fr; gap:20px;}
+    .footer-grid{grid-template-columns:1fr; gap:24px;}
+    .field-row{grid-template-columns:1fr;}
+    .stamp{position:relative; top:auto; right:auto; margin:0 auto 12px auto; width:180px; transform:scale(1);}
+    .left-stamp{position:relative; top:auto; left:auto; margin:0 auto 12px auto; width:120px; transform:scale(1);}
+    .masthead .eyebrow, .masthead h1{max-width:100%;}
   }
   @media (prefers-reduced-motion: reduce){
     *{animation:none !important; transition:none !important;}
@@ -1038,6 +961,84 @@
     width: 100%;
   }
 
+  /* ===== MOBILE DESKTOP SITE PROMPT MODAL ===== */
+  .desktop-prompt-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    background: rgba(12, 10, 8, 0.88);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .desktop-prompt-overlay.active {
+    display: flex;
+  }
+  .desktop-prompt-card {
+    background: var(--paper);
+    border: 3px double var(--ink);
+    padding: 30px 24px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    animation: dpPop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes dpPop {
+    0% { transform: scale(0.85); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .dp-badge {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--crimson);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+  .desktop-prompt-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    margin: 0 0 10px;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .desktop-prompt-card p {
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin-bottom: 20px;
+  }
+  .dp-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .dp-btn {
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    border: 1.5px solid var(--ink);
+    background: transparent;
+    cursor: pointer;
+    font-weight: 700;
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
+  .dp-btn.primary {
+    background: var(--crimson);
+    color: var(--paper);
+    border-color: var(--crimson);
+  }
+  .dp-btn:hover {
+    transform: scale(1.02);
+  }
+
   /* ===== FIXED STICKY TICKER MARQUEE BARS ===== */
   .ticker-bar {
     width: 100%;
@@ -1092,6 +1093,19 @@
 </head>
 <body>
 
+<!-- MOBILE DESKTOP SITE PROMPT OVERLAY -->
+<div id="desktopPromptOverlay" class="desktop-prompt-overlay">
+  <div class="desktop-prompt-card">
+    <div class="dp-badge">📱 Mobile Device Detected</div>
+    <h3>Desktop View Recommended</h3>
+    <p>This technical newspaper edition features broadsheet multi-column layouts &amp; 3D animations. Enable <strong>Desktop Site View</strong> for the optimal experience.</p>
+    <div class="dp-actions">
+      <button id="enableDesktopViewBtn" class="dp-btn primary">🖥️ Switch to Desktop View</button>
+      <button id="dismissDesktopPromptBtn" class="dp-btn">Continue on Mobile View</button>
+    </div>
+  </div>
+</div>
+
 <!-- SPINNING NEWSPAPER PRELOADER OVERLAY -->
 <div id="preloaderOverlay">
   <div id="posicionador">
@@ -1119,13 +1133,11 @@
 </div>
 
 <header class="masthead wrap">
-  <div class="header-stamps-bar">
-    <div class="left-stamp" id="leftUniversityStamp">
-      <img src="kare-university-logo.png" alt="Kalasalingam Academy Logo" draggable="false">
-    </div>
-    <div class="stamp" id="heroStamp">
-      <img src="kare-ieee-logo.png" alt="KARE IEEE Education Society Logo" draggable="false">
-    </div>
+  <div class="left-stamp" id="leftUniversityStamp">
+    <img src="kare-university-logo.png" alt="Kalasalingam Academy Logo" draggable="false">
+  </div>
+  <div class="stamp" id="heroStamp">
+    <img src="kare-ieee-logo.png" alt="KARE IEEE Education Society Logo" draggable="false">
   </div>
   <div class="eyebrow">Kalasalingam Academy of Research and Education</div>
   <div class="has-animation animation-ltr" data-delay="10">
@@ -1912,6 +1924,47 @@ gsap.utils.toArray('.hxg-panel').forEach((card,i)=>{
   fxgRow.addEventListener('mouseleave', () => {
     if (!isCompact) setActive(null);
   });
+})();
+
+// Mobile Desktop Site Detection & Viewport Switcher
+(function() {
+  const overlay = document.getElementById('desktopPromptOverlay');
+  const enableBtn = document.getElementById('enableDesktopViewBtn');
+  const dismissBtn = document.getElementById('dismissDesktopPromptBtn');
+  const vpMeta = document.getElementById('viewportMeta');
+
+  function isMobileDevice() {
+    return window.innerWidth <= 860 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  }
+
+  const savedPref = sessionStorage.getItem('preferredView');
+  if (savedPref === 'desktop' && vpMeta) {
+    vpMeta.setAttribute('content', 'width=1280, initial-scale=0.35');
+  }
+
+  if (isMobileDevice() && !savedPref && overlay) {
+    setTimeout(() => {
+      overlay.classList.add('active');
+    }, 600);
+  }
+
+  if (enableBtn) {
+    enableBtn.addEventListener('click', function() {
+      sessionStorage.setItem('preferredView', 'desktop');
+      if (vpMeta) {
+        vpMeta.setAttribute('content', 'width=1280, initial-scale=0.35');
+      }
+      overlay.classList.remove('active');
+      window.scrollTo(0, 0);
+    });
+  }
+
+  if (dismissBtn) {
+    dismissBtn.addEventListener('click', function() {
+      sessionStorage.setItem('preferredView', 'mobile');
+      overlay.classList.remove('active');
+    });
+  }
 })();
 
 // Payment Proof Image Preview Logic
